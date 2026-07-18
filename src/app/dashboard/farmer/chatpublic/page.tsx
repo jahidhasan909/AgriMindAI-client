@@ -1,9 +1,12 @@
 import React from 'react'
+import PublicChatBox from '@/components/DashboardComponents/Shared/PublicChat'
 
-const page = () => {
+const PublicChatPage = () => {
     return (
-        <div>page</div>
+        <div>
+            <PublicChatBox />
+        </div>
     )
 }
 
-export default page
+export default PublicChatPage
