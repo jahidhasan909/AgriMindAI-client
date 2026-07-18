@@ -43,7 +43,7 @@ const AllUsersManagementPage: React.FC<AllUsersManagementPageProps> = ({ Users }
 
     const getCitizenUsers = (rawUsers: UserProps[] | UsersFetchData): UserProps[] => {
         const arr = Array.isArray(rawUsers) ? rawUsers : (rawUsers?.data || rawUsers?.users || []);
-        return arr.filter((user: UserProps) => user.role === 'farmer');
+        return arr.filter((user: UserProps) => user.role === 'farmer' || user.role === 'buyer');
     };
 
     const [usersList, setUsersList] = useState<UserProps[]>(getCitizenUsers(Users));
@@ -141,6 +141,7 @@ const AllUsersManagementPage: React.FC<AllUsersManagementPageProps> = ({ Users }
                                     <TableRow>
                                         <TableHead>Citizen Name</TableHead>
                                         <TableHead>Email Address</TableHead>
+                                        <TableHead>Role</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="text-center w-[100px]">Actions</TableHead>
                                     </TableRow>
@@ -160,6 +161,11 @@ const AllUsersManagementPage: React.FC<AllUsersManagementPageProps> = ({ Users }
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-slate-600 dark:text-slate-300 font-medium">{user.email}</TableCell>
+                                            <TableCell>
+                                                <span className="text-xs capitalize px-2.5 py-1 rounded-md font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 dynamic-role-badge">
+                                                    {user.role}
+                                                </span>
+                                            </TableCell>
                                             <TableCell>
                                                 <span className={`text-xs capitalize px-2.5 py-0.5 rounded-full border font-semibold ${user.status === 'active' ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900' : 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900'}`}>
                                                     {user.status}
@@ -228,7 +234,11 @@ const AllUsersManagementPage: React.FC<AllUsersManagementPageProps> = ({ Users }
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-3 pt-2 text-xs border-t border-slate-100 dark:border-slate-800">
+                                    <div className="grid grid-cols-2 gap-3 pt-2 text-xs border-t border-slate-100 dark:border-slate-800">
+                                        <div>
+                                            <span className="text-slate-400 block mb-0.5">Role</span>
+                                            <span className="capitalize font-bold text-slate-700 dark:text-slate-300">{user.role}</span>
+                                        </div>
                                         <div>
                                             <span className="text-slate-400 block mb-0.5">Status</span>
                                             <span className={`capitalize font-bold ${user.status === 'active' ? 'text-emerald-600' : 'text-amber-600'}`}>{user.status}</span>

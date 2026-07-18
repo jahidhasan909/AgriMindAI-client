@@ -102,7 +102,7 @@ const Navbar: React.FC = () => {
                         </span>
                     </Link>
 
-                    {/* Navigation links (Desktop) */}
+
                     <div className="hidden lg:flex items-center gap-8">
                         <Link href="/" className={linkClass('/')}>Home</Link>
                         <Link href="/marketplace" className={linkClass('/marketplace')}>Marketplace</Link>
@@ -110,11 +110,11 @@ const Navbar: React.FC = () => {
                         <Link href="/about" className={linkClass('/about')}>About</Link>
                     </div>
 
-                    {/* Actions and toggle */}
+
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
 
-                        {/* Desktop User Section */}
+
                         <div className="hidden lg:flex items-center gap-4">
                             {!user ? (
                                 <Link href='/login' className="group relative inline-flex overflow-hidden rounded-md p-[2px]">
