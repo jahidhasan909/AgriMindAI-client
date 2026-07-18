@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Menu, X } from 'lucide-react';
 
 import { authClient } from '@/lib/auth-client';
+import ThemeToggle from './ThemeToggle';
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -34,10 +35,7 @@ const Navbar: React.FC = () => {
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
-
     const user = data?.user as User | undefined;
-
-
 
     if (isPending) {
         return (
@@ -54,11 +52,11 @@ const Navbar: React.FC = () => {
     const linkClass = (path: string): string =>
         pathname === path
             ? "text-[#f05a28] font-bold transition-colors"
-            : "text-slate-400 hover:text-[#f05a28] dark:text-slate-200 dark:hover:text-[#f05a28] font-medium transition-colors";
+            : "text-slate-500 hover:text-[#f05a28] dark:text-slate-300 dark:hover:text-[#f05a28] font-medium transition-colors";
 
     return (
         <nav className="fixed top-0 z-50 w-full">
-            <div className="px-4 container border border-slate-200/80 my-4 bg-white/60 shadow-md rounded-4xl backdrop-blur-md mx-auto sm:px-6 lg:px-8">
+            <div className="px-4 container border border-slate-200/80 my-4 bg-white/60 dark:bg-zinc-950/60 dark:border-zinc-800 shadow-md rounded-4xl backdrop-blur-md mx-auto sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
 
                     {/* Logo */}
@@ -75,7 +73,7 @@ const Navbar: React.FC = () => {
                         </span>
                     </Link>
 
-
+                    {/* Navigation links (Desktop) */}
                     <div className="hidden lg:flex items-center gap-8">
                         <Link href="/" className={linkClass('/')}>Home</Link>
                         <Link href="/marketplace" className={linkClass('/marketplace')}>Marketplace</Link>
@@ -83,139 +81,143 @@ const Navbar: React.FC = () => {
                         <Link href="/about" className={linkClass('/about')}>About</Link>
                     </div>
 
+                    {/* Actions and toggle */}
+                    <div className="flex items-center gap-4">
+                        <ThemeToggle />
 
-                    <div className="hidden lg:flex items-center gap-4">
-                        {!user ? (
-                            <Link href='/login' className="group relative inline-flex overflow-hidden rounded-2xl p-[2px]">
-                                <motion.span
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                                    className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#E2E8F0_0%,#f05a28_50%,#E2E8F0_100%)]"
-                                />
-                                <Button className="relative z-10 rounded-2xl bg-[#f05a28] px-7 font-bold text-white py-4 shadow-sm transition-all hover:bg-[#e04f20] cursor-pointer">
-                                    Login
-                                </Button>
-                            </Link>
-                        ) : (
-                            <DropdownMenu modal={false}>
-                                <DropdownMenuTrigger>
-                                    <button className="focus:outline-none cursor-pointer rounded-full transition-transform active:scale-95">
-                                        <Avatar className="h-9 w-9 border border-slate-200 dark:border-zinc-700">
-                                            <AvatarImage alt={user?.name} src={user?.image} />
-                                            <AvatarFallback className="bg-rose-100 text-[#f05a28] dark:bg-zinc-800 dark:text-green-400 font-semibold">
-                                                {user?.name?.slice(0, 2).toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </button>
-                                </DropdownMenuTrigger>
+                        <div className="hidden lg:flex items-center gap-4">
+                            {!user ? (
+                                <Link href='/login' className="group relative inline-flex overflow-hidden rounded-2xl p-[2px]">
+                                    <motion.span
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                                        className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#E2E8F0_0%,#f05a28_50%,#E2E8F0_100%)]"
+                                    />
+                                    <Button className="relative z-10 rounded-2xl bg-[#f05a28] px-7 font-bold text-white py-4 shadow-sm transition-all hover:bg-[#e04f20] cursor-pointer">
+                                        Login
+                                    </Button>
+                                </Link>
+                            ) : (
+                                <DropdownMenu modal={false}>
+                                    <DropdownMenuTrigger>
+                                        <button className="focus:outline-none cursor-pointer rounded-full transition-transform active:scale-95">
+                                            <Avatar className="h-9 w-9 border border-slate-200 dark:border-zinc-700">
+                                                <AvatarImage alt={user?.name} src={user?.image} />
+                                                <AvatarFallback className="bg-rose-100 text-[#f05a28] dark:bg-zinc-800 dark:text-green-400 font-semibold">
+                                                    {user?.name?.slice(0, 2).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </button>
+                                    </DropdownMenuTrigger>
 
-                                <DropdownMenuContent align="end" className="w-56 mt-2 bg-white dark:bg-zinc-950 dark:border-zinc-800 z-[100]">
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuLabel className="font-normal">
-                                            <div className="flex flex-col space-y-1">
-                                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.name}</p>
-                                                <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{user?.email}</p>
-                                            </div>
-                                        </DropdownMenuLabel>
-                                    </DropdownMenuGroup>
-                                    <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuItem className="cursor-pointer hover:bg-gray-200">
-                                            <Link href={`/dashboard/${user?.role}`} className="w-full block">
-                                                Dashboard
-                                            </Link>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuGroup>
-                                    <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuItem
-                                            onClick={async () => {
-                                                await authClient.signOut();
-                                                window.location.href = '/';
-                                            }}
-                                            className="text-red-600 dark:text-red-400 cursor-pointer flex justify-between items-center focus:bg-red-50 dark:focus:bg-red-950/20"
-                                        >
-                                            <span>Log Out</span>
-                                            <ArrowRight className="size-4" />
-                                        </DropdownMenuItem>
-                                    </DropdownMenuGroup>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        )}
+                                    <DropdownMenuContent align="end" className="w-56 mt-2 bg-white dark:bg-zinc-950 dark:border-zinc-800 z-[100]">
+                                        <DropdownMenuGroup>
+                                            <DropdownMenuLabel className="font-normal">
+                                                <div className="flex flex-col space-y-1">
+                                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.name}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{user?.email}</p>
+                                                </div>
+                                            </DropdownMenuLabel>
+                                        </DropdownMenuGroup>
+                                        <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
+                                        <DropdownMenuGroup>
+                                            <DropdownMenuItem className="cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800">
+                                                <Link href={`/dashboard/${user?.role}`} className="w-full block">
+                                                    Dashboard
+                                                </Link>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuGroup>
+                                        <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
+                                        <DropdownMenuGroup>
+                                            <DropdownMenuItem
+                                                onClick={async () => {
+                                                    await authClient.signOut();
+                                                    window.location.href = '/';
+                                                }}
+                                                className="text-red-600 dark:text-red-400 cursor-pointer flex justify-between items-center focus:bg-red-50 dark:focus:bg-red-950/20"
+                                            >
+                                                <span>Log Out</span>
+                                                <ArrowRight className="size-4" />
+                                            </DropdownMenuItem>
+                                        </DropdownMenuGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
+                        </div>
+
+                        {/* Mobile Navigation */}
+                        <div className="lg:hidden flex items-center gap-2">
+                            {user && (
+                                <DropdownMenu modal={false}>
+                                    <DropdownMenuTrigger>
+                                        <button className="focus:outline-none cursor-pointer rounded-full transition-transform active:scale-95">
+                                            <Avatar className="h-9 w-9 border border-slate-200 dark:border-zinc-700">
+                                                <AvatarImage alt={user?.name} src={user?.image} />
+                                                <AvatarFallback className="bg-orange-200 text-[#f05a28] dark:bg-zinc-800 dark:text-orange-400 font-semibold">
+                                                    {user?.name?.slice(0, 2).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </button>
+                                    </DropdownMenuTrigger>
+
+                                    <DropdownMenuContent align="end" className="w-56 mt-2 bg-white dark:bg-zinc-950 dark:border-zinc-800 z-[100]">
+                                        <DropdownMenuGroup>
+                                            <DropdownMenuLabel className="font-normal">
+                                                <div className="flex flex-col space-y-1">
+                                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.name}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{user?.email}</p>
+                                                </div>
+                                            </DropdownMenuLabel>
+                                        </DropdownMenuGroup>
+                                        <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
+                                        <DropdownMenuGroup>
+                                            <DropdownMenuItem className="cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800">
+                                                <Link href={`/dashboard/${user?.role}`} className="w-full block">
+                                                    Dashboard
+                                                </Link>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuGroup>
+                                        <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
+                                        <DropdownMenuGroup>
+                                            <DropdownMenuItem
+                                                onClick={async () => {
+                                                    await authClient.signOut();
+                                                    window.location.href = '/';
+                                                }}
+                                                className="text-red-600 dark:text-red-400 cursor-pointer flex justify-between items-center focus:bg-red-50 dark:focus:bg-red-950/20"
+                                            >
+                                                <span>Log Out</span>
+                                                <ArrowRight className="size-4" />
+                                            </DropdownMenuItem>
+                                        </DropdownMenuGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
+
+                            {!user && (
+                                <Link href='/login' className="group relative inline-flex overflow-hidden rounded-md p-[2px]">
+                                    <motion.span
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                                        className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#E2E8F0_0%,#f05a28_50%,#E2E8F0_100%)]"
+                                    />
+                                    <Button className="relative z-10 h-8 rounded-md bg-[#f05a28] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#e04f20] cursor-pointer">
+                                        Login
+                                    </Button>
+                                </Link>
+                            )}
+
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="text-slate-700 dark:text-slate-200 hover:text-[#f05a28] cursor-pointer"
+                            >
+                                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                            </Button>
+                        </div>
+
                     </div>
-
-                    {/* Mobile Navigation */}
-                    <div className="lg:hidden flex items-center gap-2">
-                        {user && (
-                            <DropdownMenu modal={false}>
-                                <DropdownMenuTrigger>
-                                    <button className="focus:outline-none cursor-pointer rounded-full transition-transform active:scale-95">
-                                        <Avatar className="h-9 w-9 border border-slate-200 dark:border-zinc-700">
-                                            <AvatarImage alt={user?.name} src={user?.image} />
-                                            <AvatarFallback className="bg-orange-200 text-[#f05a28] dark:bg-zinc-800 dark:text-orange-400 font-semibold">
-                                                {user?.name?.slice(0, 2).toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </button>
-                                </DropdownMenuTrigger>
-
-                                <DropdownMenuContent align="end" className="w-56 mt-2 bg-white dark:bg-zinc-950 dark:border-zinc-800 z-[100]">
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuLabel className="font-normal">
-                                            <div className="flex flex-col space-y-1">
-                                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.name}</p>
-                                                <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{user?.email}</p>
-                                            </div>
-                                        </DropdownMenuLabel>
-                                    </DropdownMenuGroup>
-                                    <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuItem className="cursor-pointer hover:bg-gray-200">
-                                            <Link href={`/dashboard/${user?.role}`} className="w-full block">
-                                                Dashboard
-                                            </Link>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuGroup>
-                                    <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuItem
-                                            onClick={async () => {
-                                                await authClient.signOut();
-                                                window.location.href = '/';
-                                            }}
-                                            className="text-red-600 dark:text-red-400 cursor-pointer flex justify-between items-center focus:bg-red-50 dark:focus:bg-red-950/20"
-                                        >
-                                            <span>Log Out</span>
-                                            <ArrowRight className="size-4" />
-                                        </DropdownMenuItem>
-                                    </DropdownMenuGroup>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        )}
-
-                        {!user && (
-                            <Link href='/login' className="group relative inline-flex overflow-hidden rounded-md p-[2px]">
-                                <motion.span
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                                    className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#E2E8F0_0%,#f05a28_50%,#E2E8F0_100%)]"
-                                />
-                                <Button className="relative z-10 h-8 rounded-md bg-[#f05a28] px-4 text-xs font-bold text-white shadow-sm hover:bg-[#e04f20] cursor-pointer">
-                                    Login
-                                </Button>
-                            </Link>
-                        )}
-
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="text-slate-700 dark:text-slate-200 hover:text-[#f05a28] cursor-pointer"
-                        >
-                            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                        </Button>
-                    </div>
-
                 </div>
             </div>
 
@@ -225,28 +227,28 @@ const Navbar: React.FC = () => {
                     <Link
                         href="/"
                         onClick={() => setIsMenuOpen(false)}
-                        className={`block px-3 py-2.5 rounded-xl ${pathname === '/' ? 'bg-orange-50 dark:bg-zinc-900 text-[#f05a28] font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                        className={`block px-3 py-2.5 rounded-xl ${pathname === '/' ? 'bg-orange-50 dark:bg-zinc-900 text-[#f05a28] font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-900'}`}
                     >
                         Home
                     </Link>
                     <Link
                         href="/marketplace"
                         onClick={() => setIsMenuOpen(false)}
-                        className={`block px-3 py-2.5 rounded-xl ${pathname === '/marketplace' ? 'bg-orange-50 dark:bg-zinc-900 text-[#f05a28] font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                        className={`block px-3 py-2.5 rounded-xl ${pathname === '/marketplace' ? 'bg-orange-50 dark:bg-zinc-900 text-[#f05a28] font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-900'}`}
                     >
                         Marketplace
                     </Link>
                     <Link
                         href="/ai-doctor"
                         onClick={() => setIsMenuOpen(false)}
-                        className={`block px-3 py-2.5 rounded-xl ${pathname === '/ai-doctor' ? 'bg-orange-50 dark:bg-zinc-900 text-[#f05a28] font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                        className={`block px-3 py-2.5 rounded-xl ${pathname === '/ai-doctor' ? 'bg-orange-50 dark:bg-zinc-900 text-[#f05a28] font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-900'}`}
                     >
                         AI Doctor
                     </Link>
                     <Link
                         href="/about"
                         onClick={() => setIsMenuOpen(false)}
-                        className={`block px-3 py-2.5 rounded-xl ${pathname === '/about' ? 'bg-orange-50 dark:bg-zinc-900 text-[#f05a28] font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                        className={`block px-3 py-2.5 rounded-xl ${pathname === '/about' ? 'bg-orange-50 dark:bg-zinc-900 text-[#f05a28] font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-900'}`}
                     >
                         About
                     </Link>

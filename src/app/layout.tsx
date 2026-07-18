@@ -6,7 +6,7 @@ import Navbar from "@/components/shared/Navbar";
 
 import { cn } from "@/lib/utils";
 import { Toaster } from "react-hot-toast";
-
+import { ThemeProvider } from "@/components/theme-provider";
 
 const plusSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -32,13 +32,14 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-white text-slate-900 dark:bg-zinc-950 dark:text-slate-50 transition-colors duration-300">
 
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <Navbar />
 
-        <Navbar />
-
-        <main className="grow">
-          {children}
-        </main>
-        <Toaster />
+          <main className="grow">
+            {children}
+          </main>
+          <Toaster />
+        </ThemeProvider>
 
       </body>
     </html>
