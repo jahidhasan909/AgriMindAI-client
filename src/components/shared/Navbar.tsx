@@ -38,12 +38,6 @@ const Navbar: React.FC = () => {
     const user = data?.user as User | undefined;
 
 
-    const mockUserData = {
-        name: user?.name || "Jahid Hasan",
-        email: user?.email || "jahid@agrimind.ai",
-        role: user?.role || "farmer",
-        image: user?.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces"
-    };
 
     if (isPending) {
         return (
@@ -107,9 +101,9 @@ const Navbar: React.FC = () => {
                                 <DropdownMenuTrigger>
                                     <button className="focus:outline-none cursor-pointer rounded-full transition-transform active:scale-95">
                                         <Avatar className="h-9 w-9 border border-slate-200 dark:border-zinc-700">
-                                            <AvatarImage alt={mockUserData.name} src={mockUserData.image} />
+                                            <AvatarImage alt={user?.name} src={user?.image} />
                                             <AvatarFallback className="bg-rose-100 text-[#f05a28] dark:bg-zinc-800 dark:text-green-400 font-semibold">
-                                                {mockUserData.name.slice(0, 2).toUpperCase()}
+                                                {user?.name?.slice(0, 2).toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                     </button>
@@ -119,15 +113,15 @@ const Navbar: React.FC = () => {
                                     <DropdownMenuGroup>
                                         <DropdownMenuLabel className="font-normal">
                                             <div className="flex flex-col space-y-1">
-                                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{mockUserData.name}</p>
-                                                <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{mockUserData.email}</p>
+                                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.name}</p>
+                                                <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{user?.email}</p>
                                             </div>
                                         </DropdownMenuLabel>
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
                                     <DropdownMenuGroup>
                                         <DropdownMenuItem className="cursor-pointer hover:bg-gray-200">
-                                            <Link href={`/dashboard/${mockUserData.role}`} className="w-full block">
+                                            <Link href={`/dashboard/${user?.role}`} className="w-full block">
                                                 Dashboard
                                             </Link>
                                         </DropdownMenuItem>
@@ -157,9 +151,9 @@ const Navbar: React.FC = () => {
                                 <DropdownMenuTrigger>
                                     <button className="focus:outline-none cursor-pointer rounded-full transition-transform active:scale-95">
                                         <Avatar className="h-9 w-9 border border-slate-200 dark:border-zinc-700">
-                                            <AvatarImage alt={mockUserData.name} src={mockUserData.image} />
+                                            <AvatarImage alt={user?.name} src={user?.image} />
                                             <AvatarFallback className="bg-orange-200 text-[#f05a28] dark:bg-zinc-800 dark:text-orange-400 font-semibold">
-                                                {mockUserData.name.slice(0, 2).toUpperCase()}
+                                                {user?.name?.slice(0, 2).toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                     </button>
@@ -169,15 +163,15 @@ const Navbar: React.FC = () => {
                                     <DropdownMenuGroup>
                                         <DropdownMenuLabel className="font-normal">
                                             <div className="flex flex-col space-y-1">
-                                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{mockUserData.name}</p>
-                                                <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{mockUserData.email}</p>
+                                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.name}</p>
+                                                <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{user?.email}</p>
                                             </div>
                                         </DropdownMenuLabel>
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
                                     <DropdownMenuGroup>
                                         <DropdownMenuItem className="cursor-pointer hover:bg-gray-200">
-                                            <Link href={`/dashboard/${mockUserData.role}`} className="w-full block">
+                                            <Link href={`/dashboard/${user?.role}`} className="w-full block">
                                                 Dashboard
                                             </Link>
                                         </DropdownMenuItem>
