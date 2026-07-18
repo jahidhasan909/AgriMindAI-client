@@ -97,9 +97,9 @@ export default function DashboardSidebar() {
         ],
         admin: [
             { icon: Home, label: "Dashboard", link: "/dashboard/admin" },
-            { icon: Users, label: "Users Manage", link: "/dashboard/admin/usersmanage" },
-            { icon: Boxes, label: "Products History", link: "/dashboard/admin/productshistory" },
-            { icon: ShoppingBag, label: "Orders History", link: "/dashboard/admin/ordershistory" },
+            { icon: Users, label: "Users Manage", link: "/dashboard/admin/usermanage" },
+            { icon: Boxes, label: "Products History", link: "/dashboard/admin/producthistory" },
+            { icon: ShoppingBag, label: "Orders History", link: "/dashboard/admin/orderhistory" },
             { icon: MessageSquare, label: "Chat Public", link: "/dashboard/admin/chatpublic" },
             { icon: User, label: "Profile", link: "/dashboard/admin/profile" },
         ],
