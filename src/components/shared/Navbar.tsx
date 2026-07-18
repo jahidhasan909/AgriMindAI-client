@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ArrowRight, Menu, X } from 'lucide-react';
+import { ArrowRight, ChevronDown, Menu, X } from 'lucide-react';
 
 import { authClient } from '@/lib/auth-client';
 import ThemeToggle from './ThemeToggle';
@@ -30,16 +30,45 @@ interface User {
     role: string;
 }
 
+
+interface CustomUserData {
+    _id: string;
+    userId: string;
+    name: string;
+    email: string;
+    mobileNumber: string;
+    image: string;
+    district: string;
+    upazila: string;
+    role: 'farmer' | 'buyer' | 'admin';
+    status: 'active' | 'blocked' | string;
+}
+
 const Navbar: React.FC = () => {
+    const baseurl = process.env.NEXT_PUBLIC_BASE_URL || '';
     const { data, isPending } = authClient.useSession();
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+    const [userData, setUserData] = useState<CustomUserData | null>(null);
 
     const user = data?.user as User | undefined;
 
+
+    useEffect(() => {
+        if (user?.email && baseurl) {
+            fetch(`${baseurl}/api/own/usercollaction?email=${user?.email}`)
+                .then(res => res.json())
+                .then(userEmail => setUserData(userEmail))
+                .catch(err => console.error("Error fetching user data from DB:", err));
+        }
+    }, [user?.email, baseurl]);
+
+
+    const activeRole = userData?.role || user?.role || 'buyer';
+
     if (isPending) {
         return (
-            <div className="fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-[100] text-sm font-semibold text-slate-600 tracking-wider">
+            <div className="fixed inset-0 flex items-center justify-center bg-white/80 dark:bg-zinc-950/85 backdrop-blur-sm z-[100] text-sm font-semibold text-slate-600 dark:text-zinc-400 tracking-wider">
                 Loading AgriMindAI...
             </div>
         );
@@ -51,12 +80,12 @@ const Navbar: React.FC = () => {
 
     const linkClass = (path: string): string =>
         pathname === path
-            ? "text-[#f05a28] font-bold transition-colors"
-            : "text-slate-500 hover:text-[#f05a28] dark:text-slate-300 dark:hover:text-[#f05a28] font-medium transition-colors";
+            ? "text-[#76a601] font-bold transition-colors"
+            : "text-slate-500 hover:text-[#76a601] dark:text-slate-300 dark:hover:text-[#76a601] font-medium transition-colors";
 
     return (
         <nav className="fixed top-0 z-50 w-full">
-            <div className="px-4 container border border-slate-200/80 my-4 bg-white/60 dark:bg-zinc-950/60 dark:border-zinc-800 shadow-md rounded-4xl backdrop-blur-md mx-auto sm:px-6 lg:px-8">
+            <div className="px-4 container border border-slate-200/80 my-4 bg-white/60 dark:bg-zinc-950/60 dark:border-zinc-800 shadow-md rounded-xl backdrop-blur-md mx-auto sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
 
                     {/* Logo */}
@@ -66,10 +95,10 @@ const Navbar: React.FC = () => {
                             height={33}
                             alt='logo'
                             className='object-cover h-[29px] md:h-[34px] w-auto'
-                            src='https://i.ibb.co.com/Q54kMTN/Chat-GPT-Image-Jul-12-2026-at-04-36-38-AM-removebg-preview.png'
+                            src='https://i.ibb.co.com/RpY5p653/Screenshot-2026-07-18-at-10-35-00-PM-removebg-preview.png'
                         />
                         <span className="text-sm lg:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                            AgriMind<span className='text-[#f05a28]'>AI</span>
+                            Agrimind<span className='text-[#79a602]'>AI</span>
                         </span>
                     </Link>
 
@@ -85,6 +114,7 @@ const Navbar: React.FC = () => {
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
 
+                        {/* Desktop User Section */}
                         <div className="hidden lg:flex items-center gap-4">
                             {!user ? (
                                 <Link href='/login' className="group relative inline-flex overflow-hidden rounded-2xl p-[2px]">
@@ -99,14 +129,15 @@ const Navbar: React.FC = () => {
                                 </Link>
                             ) : (
                                 <DropdownMenu modal={false}>
-                                    <DropdownMenuTrigger>
-                                        <button className="focus:outline-none cursor-pointer rounded-full transition-transform active:scale-95">
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="focus:outline-none flex items-center gap-1.5 hover:bg-slate-100 dark:hover:bg-zinc-900 cursor-pointer rounded-xl p-1 pr-2 transition-all active:scale-95 text-slate-600 dark:text-zinc-400">
                                             <Avatar className="h-9 w-9 border border-slate-200 dark:border-zinc-700">
-                                                <AvatarImage alt={user?.name} src={user?.image} />
+                                                <AvatarImage alt={userData?.name || user?.name} src={userData?.image || user?.image} />
                                                 <AvatarFallback className="bg-rose-100 text-[#f05a28] dark:bg-zinc-800 dark:text-green-400 font-semibold">
-                                                    {user?.name?.slice(0, 2).toUpperCase()}
+                                                    {(userData?.name || user?.name)?.slice(0, 2).toUpperCase()}
                                                 </AvatarFallback>
                                             </Avatar>
+                                            <ChevronDown className="h-4 w-4 opacity-70 transition-transform duration-200" />
                                         </button>
                                     </DropdownMenuTrigger>
 
@@ -114,15 +145,15 @@ const Navbar: React.FC = () => {
                                         <DropdownMenuGroup>
                                             <DropdownMenuLabel className="font-normal">
                                                 <div className="flex flex-col space-y-1">
-                                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.name}</p>
-                                                    <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{user?.email}</p>
+                                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{userData?.name || user?.name}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{userData?.email || user?.email}</p>
                                                 </div>
                                             </DropdownMenuLabel>
                                         </DropdownMenuGroup>
                                         <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
                                         <DropdownMenuGroup>
                                             <DropdownMenuItem className="cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800">
-                                                <Link href={`/dashboard/${user?.role}`} className="w-full block">
+                                                <Link href={`/dashboard/${activeRole}`} className="w-full block">
                                                     Dashboard
                                                 </Link>
                                             </DropdownMenuItem>
@@ -145,18 +176,19 @@ const Navbar: React.FC = () => {
                             )}
                         </div>
 
-                        {/* Mobile Navigation */}
+                        {/* Mobile Navigation Controls */}
                         <div className="lg:hidden flex items-center gap-2">
                             {user && (
                                 <DropdownMenu modal={false}>
-                                    <DropdownMenuTrigger>
-                                        <button className="focus:outline-none cursor-pointer rounded-full transition-transform active:scale-95">
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="focus:outline-none flex items-center gap-1 cursor-pointer rounded-full transition-transform active:scale-95 text-slate-600 dark:text-zinc-400">
                                             <Avatar className="h-9 w-9 border border-slate-200 dark:border-zinc-700">
-                                                <AvatarImage alt={user?.name} src={user?.image} />
+                                                <AvatarImage alt={userData?.name || user?.name} src={userData?.image || user?.image} />
                                                 <AvatarFallback className="bg-orange-200 text-[#f05a28] dark:bg-zinc-800 dark:text-orange-400 font-semibold">
-                                                    {user?.name?.slice(0, 2).toUpperCase()}
+                                                    {(userData?.name || user?.name)?.slice(0, 2).toUpperCase()}
                                                 </AvatarFallback>
                                             </Avatar>
+                                            <ChevronDown className="h-3.5 w-3.5 opacity-70" />
                                         </button>
                                     </DropdownMenuTrigger>
 
@@ -164,15 +196,15 @@ const Navbar: React.FC = () => {
                                         <DropdownMenuGroup>
                                             <DropdownMenuLabel className="font-normal">
                                                 <div className="flex flex-col space-y-1">
-                                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{user?.name}</p>
-                                                    <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{user?.email}</p>
+                                                    <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{userData?.name || user?.name}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">{userData?.email || user?.email}</p>
                                                 </div>
                                             </DropdownMenuLabel>
                                         </DropdownMenuGroup>
                                         <DropdownMenuSeparator className="bg-slate-100 dark:bg-zinc-800" />
                                         <DropdownMenuGroup>
                                             <DropdownMenuItem className="cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800">
-                                                <Link href={`/dashboard/${user?.role}`} className="w-full block">
+                                                <Link href={`/dashboard/${activeRole}`} className="w-full block">
                                                     Dashboard
                                                 </Link>
                                             </DropdownMenuItem>
