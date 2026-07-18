@@ -64,7 +64,7 @@ const Navbar: React.FC = () => {
     }, [user?.email, baseurl]);
 
 
-    const activeRole = userData?.role || user?.role || 'buyer';
+    const activeRole = userData?.role || user?.role || 'farmer';
 
     if (isPending) {
         return (
@@ -98,7 +98,7 @@ const Navbar: React.FC = () => {
                             src='https://i.ibb.co.com/RpY5p653/Screenshot-2026-07-18-at-10-35-00-PM-removebg-preview.png'
                         />
                         <span className="text-sm lg:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                            Agrimind<span className='text-[#79a602]'>AI</span>
+                            AgriMind<span className='text-[#79a602]'>AI</span>
                         </span>
                     </Link>
 
@@ -117,13 +117,13 @@ const Navbar: React.FC = () => {
                         {/* Desktop User Section */}
                         <div className="hidden lg:flex items-center gap-4">
                             {!user ? (
-                                <Link href='/login' className="group relative inline-flex overflow-hidden rounded-2xl p-[2px]">
+                                <Link href='/login' className="group relative inline-flex overflow-hidden rounded-md p-[2px]">
                                     <motion.span
                                         animate={{ rotate: 360 }}
                                         transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                                        className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#E2E8F0_0%,#f05a28_50%,#E2E8F0_100%)]"
+                                        className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#E2E8F0_0%,#76a601_50%,#E2E8F0_100%)]"
                                     />
-                                    <Button className="relative z-10 rounded-2xl bg-[#f05a28] px-7 font-bold text-white py-4 shadow-sm transition-all hover:bg-[#e04f20] cursor-pointer">
+                                    <Button className="relative z-10 rounded-md bg-[#76a601] px-7 font-bold text-white py-4 shadow-sm transition-all hover:bg-[#2a5d04] cursor-pointer">
                                         Login
                                     </Button>
                                 </Link>

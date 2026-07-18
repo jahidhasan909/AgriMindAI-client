@@ -49,7 +49,7 @@ export default function AgrimindLogin() {
 
             if (resdata) {
                 toast.success('Welcome back! Let\'s optimize your harvest.');
-                router.push('/dashboard');
+                router.push('/');
             }
 
             if (error) {

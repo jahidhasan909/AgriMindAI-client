@@ -129,7 +129,7 @@ export default function DashboardSidebar() {
                                         src='https://i.ibb.co.com/RpY5p653/Screenshot-2026-07-18-at-10-35-00-PM-removebg-preview.png'
                                     />
                                     <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
-                                        Agrimind<span className='text-[#79a602]'>AI</span>
+                                        AgriMind<span className='text-[#79a602]'>AI</span>
                                     </span>
                                 </Link>
                             </SheetTitle>
@@ -170,7 +170,7 @@ export default function DashboardSidebar() {
                             src='https://i.ibb.co.com/RpY5p653/Screenshot-2026-07-18-at-10-35-00-PM-removebg-preview.png'
                         />
                         <span className="text-base lg:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                            Agrimind<span className='text-[#79a602]'>AI</span>
+                            AgriMind<span className='text-[#79a602]'>AI</span>
                         </span>
                     </Link>
                 </div>
