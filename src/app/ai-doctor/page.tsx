@@ -9,7 +9,6 @@ export const metadata: Metadata = {
     "Ask your role-aware AI expert — कৃষি ডক্টর for farmers, Nutritionist for buyers, and Business Intelligence for admins. Powered by AgriMindAI.",
 };
 
-// ─── Static persona feature cards ─────────────────────────────────────────────
 const FEATURE_CARDS = [
   {
     emoji: "🌾",
@@ -133,7 +132,6 @@ export default function AiDoctorPage() {
         </div>
       </section>
 
-      {/* ── Feature Cards ──────────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-4 pb-12">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {FEATURE_CARDS.map((card) => (
@@ -171,7 +169,7 @@ export default function AiDoctorPage() {
         </div>
       </section>
 
-      {/* ── Chat Widget ────────────────────────────────────────────────────── */}
+     
       <section className="max-w-4xl mx-auto px-4 pb-20">
         <div className="rounded-3xl overflow-hidden shadow-2xl dark:shadow-none"
           style={{ filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.35))" }}
