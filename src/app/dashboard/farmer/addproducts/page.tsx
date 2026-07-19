@@ -11,9 +11,7 @@ import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { UploadImagebb } from "@/lib/action/UploadImgbb";
-import { Check, Loader2 } from "lucide-react";
-
-
+import { Check, Loader2, Sparkles } from "lucide-react";
 
 interface District {
     id: string;
@@ -43,6 +41,7 @@ interface ProductFormData {
 
 export default function CreateProductPost() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [aiLoading, setAiLoading] = useState<boolean>(false);
 
     const [districts, setDistricts] = useState<District[]>([]);
     const [upazilas, setUpazilas] = useState<Upazila[]>([]);
@@ -56,7 +55,8 @@ export default function CreateProductPost() {
         control,
         formState: { errors },
         setValue,
-        reset
+        reset,
+        watch
     } = useForm<ProductFormData>({
         defaultValues: {
             productName: "",
@@ -71,6 +71,8 @@ export default function CreateProductPost() {
         }
     });
 
+    const selectedDistrict = watch("district");
+
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -82,7 +84,6 @@ export default function CreateProductPost() {
                 const districtData = await districtRes.json();
                 const upazilaData = await upazilaRes.json();
 
-
                 setDistricts(districtData?.[2]?.data || []);
                 setUpazilas(upazilaData?.[2]?.data || []);
             } catch (error) {
@@ -92,7 +93,6 @@ export default function CreateProductPost() {
 
         loadData();
     }, []);
-
 
     const handleDistrictChange = (districtName: string) => {
         setValue("district", districtName);
@@ -109,7 +109,7 @@ export default function CreateProductPost() {
     };
 
     if (isPending) {
-        return <div>loading...</div>;
+        return <div className="min-h-screen flex items-center justify-center dark:bg-slate-950 text-slate-500">Loading session...</div>;
     }
 
     const user = userData?.user;
@@ -118,7 +118,43 @@ export default function CreateProductPost() {
         return <div className="text-center py-20 text-slate-500 font-medium">Please log in as a farmer to post products.</div>;
     }
 
-    const baseurl = process.env.NEXT_PUBLIC_BASE_URL;
+    const baseurl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
+
+    const handleAIFill = async () => {
+        const productName = (document.getElementById('productName') as HTMLInputElement)?.value?.trim();
+        if (!productName || productName.length < 2) {
+            toast.error('Please enter a product name first.');
+            return;
+        }
+
+        setAiLoading(true);
+        const targetUrl = `${baseurl}/api/ai/generate-product`;
+        console.log('Initiating AI auto-fill request to:', targetUrl, 'with productName:', productName);
+
+        try {
+            const res = await fetch(targetUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productName }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'AI request failed');
+
+            console.log('AI auto-fill response received:', data);
+
+            setValue('shortDescription', data.shortDescription, { shouldValidate: true });
+            setValue('pricePerKg', Number(data.pricePerKg), { shouldValidate: true });
+            setValue('category', data.category, { shouldValidate: true });
+
+            toast.success('✨ AI auto-filled the product details!');
+        } catch (err: any) {
+            console.error('AI Auto-Fill client error full stack trace:', err);
+            toast.error(err.message || 'Failed to get AI suggestions.');
+        } finally {
+            setAiLoading(false);
+        }
+    };
 
     const onSubmit = async (data: ProductFormData) => {
         if (!data.images || data.images.length !== 3) {
@@ -230,6 +266,20 @@ export default function CreateProductPost() {
                                     {...register("productName", { required: "Product name is required" })}
                                 />
                                 {errors.productName && <span className="text-xs text-red-500 font-medium pl-1 mt-1">{errors.productName.message}</span>}
+
+                                {/* AI Auto-Fill Button */}
+                                <button
+                                    type="button"
+                                    onClick={handleAIFill}
+                                    disabled={aiLoading}
+                                    className="mt-1 flex items-center justify-center gap-2 w-full h-10 rounded-xl border border-dashed border-violet-400 dark:border-violet-600 bg-violet-50/60 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-xs font-bold tracking-wide hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    {aiLoading ? (
+                                        <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating.....</>
+                                    ) : (
+                                        <><Sparkles className="w-3.5 h-3.5" /> ✨ AI Auto-Fill Details</>
+                                    )}
+                                </button>
                             </div>
 
                             <div className="flex flex-col gap-1.5">
@@ -248,7 +298,8 @@ export default function CreateProductPost() {
                                             <option value="" className="bg-white dark:bg-slate-900">Select category</option>
                                             <option value="Fruits" className="bg-white dark:bg-slate-900">Fruits (ফলফলাদি)</option>
                                             <option value="Vegetables" className="bg-white dark:bg-slate-900">Vegetables (শাকসবজি)</option>
-                                            <option value="Grains" className="bg-white dark:bg-slate-900">Grains & Crops</option>
+                                            <option value="Grains" className="bg-white dark:bg-slate-900">Grains &amp; Crops</option>
+                                            <option value="Herbs" className="bg-white dark:bg-slate-900">Herbs (ভেষজ)</option>
                                             <option value="Others" className="bg-white dark:bg-slate-900">Others</option>
                                         </select>
                                     )}
@@ -305,7 +356,10 @@ export default function CreateProductPost() {
                                         <select
                                             {...field}
                                             id="district"
-                                            onChange={(e) => handleDistrictChange(e.target.value)}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleDistrictChange(e.target.value);
+                                            }}
                                             className={`w-full h-10.5 bg-slate-50/50 dark:bg-slate-800/60 border text-slate-850 dark:text-white text-xs font-medium rounded-xl px-4 outline-none focus:border-[#f05a28] transition-all cursor-pointer ${errors.district ? "border-red-500" : "border-slate-200/60 dark:border-slate-700/50"
                                                 }`}
                                         >
@@ -331,7 +385,7 @@ export default function CreateProductPost() {
                                         <select
                                             {...field}
                                             id="upazila"
-                                            disabled={filteredUpazilas.length === 0}
+                                            disabled={!selectedDistrict}
                                             className={`w-full h-10.5 bg-slate-50/50 dark:bg-slate-800/60 border text-slate-850 dark:text-white text-xs font-medium rounded-xl px-4 outline-none focus:border-[#f05a28] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${errors.upazila ? "border-red-500" : "border-slate-200/60 dark:border-slate-700/50"
                                                 }`}
                                         >
