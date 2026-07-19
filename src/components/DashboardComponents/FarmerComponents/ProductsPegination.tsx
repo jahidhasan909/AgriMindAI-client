@@ -2,7 +2,7 @@
 
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { MoreVertical, Eye, Edit2, Trash2, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -28,7 +28,7 @@ interface ProductRequest {
     productName: string;
     category: string;
     pricePerKg: number;
-    availability: 'Available' | 'Unavailable';
+    availability: 'Available' | 'Unavailable' | 'Ordered';
     contactNumber: string;
     location: {
         district?: string;
@@ -71,7 +71,6 @@ interface FarmerProductsPaginationProps {
 }
 
 const FarmerProductsPagination: React.FC<FarmerProductsPaginationProps> = ({products, user }) => {
-    const baseurl = process.env.NEXT_PUBLIC_BASE_URL || '';
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -106,17 +105,19 @@ const FarmerProductsPagination: React.FC<FarmerProductsPaginationProps> = ({prod
         if (!selectedProductToDelete) return;
 
         try {
-            const res = await fetch(`${baseurl}/api/farmer/products/${selectedProductToDelete}`, {
+            const res = await fetch(`/api/farmer/products/delete`, {
                 method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId: selectedProductToDelete })
             });
 
             const deleteData = await res.json();
-            if (res.ok && deleteData) {
+            if (res.ok && deleteData.success) {
                 toast.success('Product deleted successfully!');
                 setProductData(prev => prev.filter(prod => prod._id !== selectedProductToDelete));
                 router.refresh();
             } else {
-                toast.error('Failed to delete product.');
+                toast.error(deleteData.error || 'Failed to delete product.');
             }
         } catch (error) {
             toast.error('Error deleting product');
@@ -128,15 +129,20 @@ const FarmerProductsPagination: React.FC<FarmerProductsPaginationProps> = ({prod
 
     const handleConfirmOrder = async (id: string) => {
         try {
-            const res = await fetch(`${baseurl}/api/farmer/products/confirm/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' }
+            const res = await fetch(`/api/farmer/products/confirm`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId: id })
             });
-            if (res.ok) {
+            const data = await res.json();
+            if (res.ok && data.success) {
                 toast.success('Order confirmed successfully!');
+                setProductData(prev => 
+                    prev.map(prod => prod._id === id ? { ...prod, availability: 'Ordered' } : prod)
+                );
                 router.refresh();
             } else {
-                toast.error('Failed to confirm order.');
+                toast.error(data.error || 'Failed to confirm order.');
             }
         } catch (error) {
             toast.error('Error confirming order');
@@ -170,6 +176,7 @@ const FarmerProductsPagination: React.FC<FarmerProductsPaginationProps> = ({prod
                             <option value="all">All ({productData.length})</option>
                             <option value="available">Available ({productData.filter(p => p.availability === 'Available').length})</option>
                             <option value="unavailable">Stock Out ({productData.filter(p => p.availability === 'Unavailable').length})</option>
+                            <option value="ordered">Ordered ({productData.filter(p => p.availability === 'Ordered').length})</option>
                         </select>
                     </div>
                 </header>
@@ -223,7 +230,9 @@ const FarmerProductsPagination: React.FC<FarmerProductsPaginationProps> = ({prod
                                                 </TableCell>
                                                 <TableCell>
                                                     <span className={`text-xs capitalize px-2.5 py-0.5 rounded-full border font-semibold
-                                                    ${product?.availability === 'Available' ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-400' : 'bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-950/20 dark:border-rose-900 dark:text-rose-400'}
+                                                    ${product?.availability === 'Available' ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900 dark:text-emerald-400' : 
+                                                      product?.availability === 'Ordered' ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950/20 dark:border-blue-900 dark:text-blue-400' :
+                                                      'bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-950/20 dark:border-rose-900 dark:text-rose-400'}
                                                     `}>{product?.availability}</span>
                                                 </TableCell>
                                                 <TableCell className="text-center">
@@ -254,7 +263,7 @@ const FarmerProductsPagination: React.FC<FarmerProductsPaginationProps> = ({prod
                                         <div className="grid grid-cols-2 gap-3 pt-2 text-xs border-t border-slate-100 dark:border-slate-800 items-center">
                                             <div>
                                                 <span className="text-slate-400 block mb-0.5">Status</span>
-                                                <span className={`capitalize font-bold ${product?.availability === 'Available' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                                <span className={`capitalize font-bold ${product?.availability === 'Available' ? 'text-emerald-600' : product?.availability === 'Ordered' ? 'text-blue-600' : 'text-rose-600'}`}>
                                                     {product?.availability}
                                                 </span>
                                             </div>
@@ -342,6 +351,9 @@ interface FarmerActionDropdownProps {
 
 const FarmerActionDropdown: React.FC<FarmerActionDropdownProps> = ({ product, onDelete, onConfirm }) => {
     const hasBuyer = !!(product?.buyerEmail || product?.buyerName);
+    const isOrdered = product?.availability === 'Ordered';
+    const isAvailable = product?.availability === 'Available';
+    const isEditDisabled = !isAvailable;
 
     return (
         <DropdownMenu>
@@ -359,34 +371,38 @@ const FarmerActionDropdown: React.FC<FarmerActionDropdownProps> = ({ product, on
                     </Link>
                 </DropdownMenuItem>
                 
-                {hasBuyer ? (
-                    <>
-                        <DropdownMenuItem 
-                            className="cursor-pointer text-xs font-medium text-green-600 hover:bg-gray-100 flex items-center gap-2"
-                            onClick={() => onConfirm(product._id)}
-                        >
-                            <CheckCircle className="h-3.5 w-3.5" />
-                            <span>Confirm Order</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem disabled className="text-xs font-medium text-slate-400 dark:text-slate-600 flex items-center gap-2 opacity-50 cursor-not-allowed">
-                            <Edit2 className="h-3.5 w-3.5" />
-                            <span>Edit (Disabled)</span>
-                        </DropdownMenuItem>
-                    </>
+                {hasBuyer && !isOrdered ? (
+                    <DropdownMenuItem 
+                        className="cursor-pointer text-xs font-medium text-green-600 hover:bg-gray-100 flex items-center gap-2"
+                        onClick={() => onConfirm(product._id)}
+                    >
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        <span>Confirm Order</span>
+                    </DropdownMenuItem>
                 ) : (
-                    <>
-                        <DropdownMenuItem disabled className="text-xs font-medium text-slate-400 dark:text-slate-600 flex items-center gap-2 opacity-50 cursor-not-allowed">
-                            <CheckCircle className="h-3.5 w-3.5" />
-                            <span>Confirm Order (No Buyer)</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer text-xs hover:bg-gray-100 font-medium">
-                            <Link href={`/dashboard/farmer/products/edit/${product._id}`} className="flex items-center gap-2 w-full">
-                                <Edit2 className="h-3.5 w-3.5" />
-                                <span>Edit Request</span>
-                            </Link>
-                        </DropdownMenuItem>
-                    </>
+                    <DropdownMenuItem disabled className="text-xs font-medium text-slate-400 dark:text-slate-600 flex items-center gap-2 opacity-50 cursor-not-allowed">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        <span>{isOrdered ? "Order Confirmed" : "Confirm Order"}</span>
+                    </DropdownMenuItem>
                 )}
+                
+                <DropdownMenuItem 
+                    className={`cursor-pointer text-xs font-medium flex items-center gap-2 ${isEditDisabled ? 'opacity-50 pointer-events-none cursor-not-allowed' : 'hover:bg-gray-100'}`}
+                    disabled={isEditDisabled}
+                    asChild={!isEditDisabled}
+                >
+                    {isEditDisabled ? (
+                        <div className="flex items-center gap-2 w-full text-slate-400 dark:text-slate-600">
+                            <Edit2 className="h-3.5 w-3.5" />
+                            <span>Edit Request</span>
+                        </div>
+                    ) : (
+                        <Link href={`/dashboard/farmer/products/edit/${product._id}`} className="flex items-center gap-2 w-full">
+                            <Edit2 className="h-3.5 w-3.5" />
+                            <span>Edit Request</span>
+                        </Link>
+                    )}
+                </DropdownMenuItem>
 
                 <DropdownMenuItem 
                     className="cursor-pointer text-xs font-medium text-destructive focus:text-destructive hover:bg-gray-100 focus:bg-destructive/10 flex items-center gap-2"

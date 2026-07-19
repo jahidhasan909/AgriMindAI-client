@@ -1,8 +1,8 @@
 import React from 'react'
 
-const page = () => {
+const Buyerpage = () => {
     return (
         <div>page</div>
     )
 }
-export default page
+export default Buyerpage
