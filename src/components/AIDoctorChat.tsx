@@ -2,7 +2,20 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { authClient } from "@/lib/auth-client";
-import { Send, Bot, User, Loader2, AlertCircle, Leaf, ShoppingBasket, BarChart3, X, Sparkles, ChevronDown } from "lucide-react";
+import {
+  Send,
+  Bot,
+  User,
+  Loader2,
+  AlertCircle,
+  Leaf,
+  ShoppingBasket,
+  BarChart3,
+  X,
+  Sparkles,
+  ChevronDown,
+  RotateCcw,
+} from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type UserRole = "farmer" | "buyer" | "admin";
@@ -31,9 +44,11 @@ const PERSONA = {
     sublabel: "Senior Agricultural Consultant",
     icon: <Leaf className="w-4 h-4" />,
     emoji: "🌾",
-    accentColor: "#76a601",
-    placeholder: "আপনার সমস্যা বাংলা, English বা Banglish-এ লিখুন... (e.g. amr tomato gach e poka hoise)",
-    welcome: "আস্সালামু আলাইকুম! আমি আপনার কৃষি ডক্টর 🌾 Bangla, English বা Banglish (যেমন \"amr dhane poka hoise\") যেকোনো ভাষায় প্রশ্ন করুন — গাছের রোগ, পোকা, সার, সেচ, বন্যা সব বিষয়ে বিস্তারিত পরামর্শ দেব।",
+    accentColor: "#79a603",
+    placeholder:
+      "আপনার সমস্যা বাংলা, English বা Banglish-এ লিখুন... (e.g. amr tomato gach e poka hoise)",
+    welcome:
+      'আস্সালামু আলাইকুম! আমি আপনার কৃষি ডক্টর 🌾 Bangla, English বা Banglish (যেমন "amr dhane poka hoise") যেকোনো ভাষায় প্রশ্ন করুন — গাছের রোগ, পোকা, সার, সেচ, বন্যা সব বিষয়ে বিস্তারিত পরামর্শ দেব।',
     sublabelShort: "কৃষি বিশেষজ্ঞ",
   },
   buyer: {
@@ -42,34 +57,43 @@ const PERSONA = {
     icon: <ShoppingBasket className="w-4 h-4" />,
     emoji: "🥗",
     accentColor: "#f05a28",
-    placeholder: "স্বাস্থ্য বা কেনাকাটা নিয়ে Bangla/Banglish-এ লিখুন... (e.g. amer poshtigon ki?)",
-    welcome: "হ্যালো! আমি আপনার পুষ্টি ও শপিং বিশেষজ্ঞ 🥗 Bangla, English বা Banglish (যেমন \"amer vitamin ki\") যেকোনো ভাষায় প্রশ্ন করুন — ফল-সবজির পুষ্টিগুণ, ফরমালিন চেনার উপায়, রেসিপি — সব বিষয়ে বিস্তারিত উত্তর দেব।",
+    placeholder:
+      "স্বাস্থ্য বা কেনাকাটা নিয়ে Bangla/Banglish-এ লিখুন... (e.g. amer poshtigon ki?)",
+    welcome:
+      'হ্যালো! আমি আপনার পুষ্টি ও শপিং বিশেষজ্ঞ 🥗 Bangla, English বা Banglish (যেমন "amer vitamin ki") যেকোনো ভাষায় প্রশ্ন করুন — ফল-সবজির পুষ্টিগুণ, ফরমালিন চেনার উপায়, রেসিপি — সব বিষয়ে বিস্তারিত উত্তর দেব।',
     sublabelShort: "Nutritionist",
   },
   admin: {
     label: "BI Admin",
-    sublabel: "বিদ্যা বিশ্লেষণ সহকারী",
+    sublabel: "বিজনেস অ্যানালিটিক্স সহকারী",
     icon: <BarChart3 className="w-4 h-4" />,
     emoji: "🖥️",
     accentColor: "#6366f1",
-    placeholder: "প্ল্যাটফর্ম সমস্যা Bangla বা Banglish-এ লিখুন... (e.g. fraud seller kemne detect korbo)",
-    welcome: "আস্সালামু আলাইকুম, Admin! আমি আপনার Business Intelligence AI 🖥️ Bangla, English বা Banglish (যেমন \"seller fraud kemne rokhi\") যেকোনো ভাষায় প্রশ্ন করুন — inventory, fraud detection, escrow, বা platform growth সব বিষয়ে বিস্তারিত পরামর্শ দেব।",
+    placeholder:
+      "প্ল্যাটফর্ম সমস্যা Bangla বা Banglish-এ লিখুন... (e.g. fraud seller kemne detect korbo)",
+    welcome:
+      'আস্সালামু আলাইকুম, Admin! আমি আপনার Business Intelligence AI 🖥️ Bangla, English বা Banglish (যেমন "seller fraud kemne rokhi") যেকোনো ভাষায় প্রশ্ন করুন — inventory, fraud detection, escrow, বা platform growth সব বিষয়ে বিস্তারিত পরামর্শ দেব।',
     sublabelShort: "BI বিশ্লেষক",
   },
 } as const;
 
 // ─── Typing Indicator ──────────────────────────────────────────────────────────
-const TypingIndicator: React.FC<{ accentColor: string; label: string }> = ({ accentColor, label }) => (
+const TypingIndicator: React.FC<{ accentColor: string; label: string }> = ({
+  accentColor,
+  label,
+}) => (
   <div className="flex items-end gap-2.5 justify-start">
     <div
-      className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg"
-      style={{ background: `${accentColor}25`, border: `1.5px solid ${accentColor}50` }}
+      className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"
+      style={{
+        backgroundColor: `${accentColor}15`,
+        border: `1px solid ${accentColor}30`,
+      }}
     >
       <Bot className="w-4 h-4" style={{ color: accentColor }} />
     </div>
     <div
-      className="px-4 py-3 rounded-2xl rounded-bl-sm backdrop-blur-md"
-      style={{ background: `${accentColor}15`, border: `1px solid ${accentColor}30` }}
+      className="px-4 py-3 rounded-2xl rounded-bl-sm bg-slate-100 dark:bg-zinc-800/80 border border-slate-200/60 dark:border-zinc-700/60"
     >
       <div className="flex items-center gap-2.5">
         <div className="flex items-center gap-1">
@@ -77,11 +101,17 @@ const TypingIndicator: React.FC<{ accentColor: string; label: string }> = ({ acc
             <span
               key={i}
               className="w-2 h-2 rounded-full animate-bounce"
-              style={{ backgroundColor: accentColor, animationDelay: `${i * 0.15}s`, opacity: 0.85 }}
+              style={{
+                backgroundColor: accentColor,
+                animationDelay: `${i * 0.15}s`,
+                opacity: 0.85,
+              }}
             />
           ))}
         </div>
-        <span className="text-xs font-medium" style={{ color: `${accentColor}cc` }}>
+        <span
+          className="text-xs font-medium text-slate-500 dark:text-zinc-400"
+        >
           {label} বিশ্লেষণ করছে...
         </span>
       </div>
@@ -89,23 +119,27 @@ const TypingIndicator: React.FC<{ accentColor: string; label: string }> = ({ acc
   </div>
 );
 
-// ─── Rich Text Renderer (renders **bold** and bullet lines from AI output) ───
-const RichText: React.FC<{ text: string; isUser: boolean }> = ({ text, isUser }) => {
+// ─── Rich Text Renderer ────────────────────────────────────────────────────────
+const RichText: React.FC<{ text: string; isUser: boolean }> = ({
+  text,
+  isUser,
+}) => {
   const lines = text.split("\n");
   return (
-    <div className="space-y-0.5">
+    <div className="space-y-1">
       {lines.map((line, i) => {
         const parsed = line.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
         const isEmpty = line.trim() === "";
         const isIndented = /^([•\-]|\d+\.)/.test(line.trim());
-        const isBold = parsed.startsWith("<strong>") && parsed.endsWith("</strong>");
+        const isBold =
+          parsed.startsWith("<strong>") && parsed.endsWith("</strong>");
         return isEmpty ? (
           <div key={i} className="h-1.5" />
         ) : (
           <p
             key={i}
             className={[
-              "text-sm leading-relaxed",
+              "text-xs sm:text-sm leading-relaxed",
               isIndented ? "pl-3" : "",
               isBold && !isUser ? "font-semibold mb-0.5" : "",
             ].join(" ")}
@@ -117,57 +151,79 @@ const RichText: React.FC<{ text: string; isUser: boolean }> = ({ text, isUser })
   );
 };
 
-// ─── Message Bubble ──────────────────────────────────────────────
+// ─── Message Bubble ────────────────────────────────────────────────────────────
 const MessageBubble: React.FC<{
   msg: Message;
-  persona: typeof PERSONA[UserRole];
+  persona: (typeof PERSONA)[UserRole];
   userName: string;
   userImage?: string;
 }> = ({ msg, persona, userName, userImage }) => {
   const isUser = msg.sender === "user";
-  const timeStr = msg.timestamp.toLocaleTimeString("en-BD", { hour: "2-digit", minute: "2-digit" });
+  const timeStr = msg.timestamp.toLocaleTimeString("en-BD", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
-    <div className={`flex items-start gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`flex items-start gap-2.5 ${
+        isUser ? "justify-end" : "justify-start"
+      }`}
+    >
       {!isUser && (
         <div
-          className="w-8 h-8 mt-5 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg"
-          style={{ background: `${persona.accentColor}25`, border: `1.5px solid ${persona.accentColor}50` }}
+          className="w-8 h-8 mt-1 rounded-xl flex items-center justify-center flex-shrink-0 shadow-xs"
+          style={{
+            backgroundColor: `${persona.accentColor}15`,
+            border: `1px solid ${persona.accentColor}30`,
+          }}
         >
           <Bot className="w-4 h-4" style={{ color: persona.accentColor }} />
         </div>
       )}
 
-      <div className={`flex flex-col gap-1 ${isUser ? "max-w-[72%] items-end" : "max-w-[82%] items-start"}`}>
-        <span className="text-xs text-white/40 px-1">
+      <div
+        className={`flex flex-col gap-1 ${
+          isUser ? "max-w-[80%] sm:max-w-[70%] items-end" : "max-w-[85%] sm:max-w-[80%] items-start"
+        }`}
+      >
+        <span className="text-[10px] text-slate-400 dark:text-zinc-500 px-1 font-medium">
           {isUser ? userName || "You" : persona.label}
         </span>
         <div
-          className={`px-4 py-3 rounded-2xl shadow-md ${
-            isUser ? "rounded-br-sm text-white" : "rounded-bl-sm text-white/90 backdrop-blur-md"
+          className={`px-4 py-3 rounded-2xl text-slate-800 dark:text-zinc-100 shadow-xs ${
+            isUser
+              ? "rounded-br-sm text-white font-normal"
+              : "rounded-bl-sm bg-slate-100 dark:bg-zinc-800/90 border border-slate-200/60 dark:border-zinc-700/60"
           }`}
           style={
             isUser
               ? { backgroundColor: persona.accentColor }
-              : { background: `${persona.accentColor}12`, border: `1px solid ${persona.accentColor}35` }
+              : undefined
           }
         >
           {isUser ? (
-            <p className="text-sm leading-relaxed">{msg.text}</p>
+            <p className="text-xs sm:text-sm leading-relaxed">{msg.text}</p>
           ) : (
             <RichText text={msg.text} isUser={false} />
           )}
         </div>
-        <span className="text-[10px] text-white/30 px-1">{timeStr}</span>
+        <span className="text-[9px] text-slate-400 dark:text-zinc-600 px-1">
+          {timeStr}
+        </span>
       </div>
 
       {isUser && (
-        <div className="w-8 h-8 mt-5 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg overflow-hidden bg-white/10 border border-white/20">
+        <div className="w-8 h-8 mt-1 rounded-xl flex items-center justify-center flex-shrink-0 shadow-xs overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">
           {userImage ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={userImage} alt={userName} className="w-full h-full object-cover" />
+            <img
+              src={userImage}
+              alt={userName}
+              className="w-full h-full object-cover"
+            />
           ) : (
-            <User className="w-4 h-4 text-white/60" />
+            <User className="w-4 h-4 text-slate-500 dark:text-zinc-400" />
           )}
         </div>
       )}
@@ -177,7 +233,7 @@ const MessageBubble: React.FC<{
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ;
   const { data: session } = authClient.useSession();
   const sessionUser = session?.user as
     | { name?: string; email?: string; image?: string; role?: string }
@@ -196,10 +252,13 @@ const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
 
   // Resolve active role
   const activeRole: UserRole =
-    userRole || dbUser?.role || (sessionUser?.role as UserRole | undefined) || "farmer";
+    userRole ||
+    dbUser?.role ||
+    (sessionUser?.role as UserRole | undefined) ||
+    "farmer";
   const persona = PERSONA[activeRole];
 
-  // Fetch DB user
+
   useEffect(() => {
     if (sessionUser?.email) {
       fetch(`${baseUrl}/api/own/usercollaction?email=${sessionUser.email}`)
@@ -209,18 +268,29 @@ const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
     }
   }, [sessionUser?.email, baseUrl]);
 
-  // Seed welcome on role change
+
   useEffect(() => {
-    setMessages([{ id: "welcome", sender: "ai", text: persona.welcome, timestamp: new Date() }]);
+    setMessages([
+      {
+        id: "welcome",
+        sender: "ai",
+        text: persona.welcome,
+        timestamp: new Date(),
+      },
+    ]);
     setError(null);
   }, [activeRole, persona.welcome]);
 
   // Scroll to bottom
   const scrollToBottom = useCallback((smooth = true) => {
-    messagesEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
+    messagesEndRef.current?.scrollIntoView({
+      behavior: smooth ? "smooth" : "auto",
+    });
   }, []);
 
-  useEffect(() => { scrollToBottom(); }, [messages, isLoading, scrollToBottom]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading, scrollToBottom]);
 
   const handleScroll = () => {
     const el = containerRef.current;
@@ -228,7 +298,7 @@ const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
     setShowScrollBtn(el.scrollHeight - el.scrollTop - el.clientHeight > 120);
   };
 
-  // Auto-resize textarea
+
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
     e.target.style.height = "auto";
@@ -244,7 +314,12 @@ const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
     setInput("");
     if (inputRef.current) inputRef.current.style.height = "auto";
 
-    const userMsg: Message = { id: `u-${Date.now()}`, sender: "user", text, timestamp: new Date() };
+    const userMsg: Message = {
+      id: `u-${Date.now()}`,
+      sender: "user",
+      text,
+      timestamp: new Date(),
+    };
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
 
@@ -263,10 +338,18 @@ const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
       const data = await res.json();
       setMessages((prev) => [
         ...prev,
-        { id: `ai-${Date.now()}`, sender: "ai", text: data.reply || "দুঃখিত, কোনো উত্তর পাওয়া যায়নি।", timestamp: new Date() },
+        {
+          id: `ai-${Date.now()}`,
+          sender: "ai",
+          text: data.reply || "দুঃখিত, কোনো উত্তর পাওয়া যায়নি।",
+          timestamp: new Date(),
+        },
       ]);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "নেটওয়ার্ক সমস্যা। দয়া করে আবার চেষ্টা করুন।";
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "নেটওয়ার্ক সমস্যা। দয়া করে আবার চেষ্টা করুন।";
       setError(msg);
       setMessages((prev) => prev.filter((m) => m.id !== userMsg.id));
     } finally {
@@ -276,11 +359,21 @@ const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
   }, [input, isLoading, activeRole, baseUrl]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   };
 
   const clearChat = () => {
-    setMessages([{ id: `welcome-${Date.now()}`, sender: "ai", text: persona.welcome, timestamp: new Date() }]);
+    setMessages([
+      {
+        id: `welcome-${Date.now()}`,
+        sender: "ai",
+        text: persona.welcome,
+        timestamp: new Date(),
+      },
+    ]);
     setError(null);
   };
 
@@ -288,108 +381,80 @@ const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
   const displayImage = dbUser?.image || sessionUser?.image;
 
   return (
-    <div
-      className="flex flex-col h-full min-h-[600px] w-full rounded-2xl overflow-hidden shadow-2xl relative"
-      style={{
-        background: "linear-gradient(135deg, #080f07 0%, #0d1a0b 50%, #080f07 100%)",
-        border: `1px solid ${persona.accentColor}30`,
-        boxShadow: `0 0 60px ${persona.accentColor}10, 0 25px 60px rgba(0,0,0,0.7)`,
-      }}
-    >
-      {/* Grid overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.025]"
-        style={{
-          backgroundImage: `linear-gradient(${persona.accentColor} 1px, transparent 1px), linear-gradient(90deg, ${persona.accentColor} 1px, transparent 1px)`,
-          backgroundSize: "40px 40px",
-        }}
-      />
-
-      {/* ── Header ── */}
-      <div
-        className="relative flex items-center justify-between px-5 py-4 flex-shrink-0 z-10"
-        style={{
-          background: `linear-gradient(135deg, ${persona.accentColor}20, ${persona.accentColor}08)`,
-          borderBottom: `1px solid ${persona.accentColor}25`,
-        }}
-      >
+    <div className="flex flex-col h-[600px] w-full bg-white dark:bg-zinc-900 transition-colors duration-300 relative">
+    
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 dark:border-zinc-800/80 bg-slate-50/50 dark:bg-zinc-900/50 backdrop-blur-xs z-10">
         <div className="flex items-center gap-3">
-          {/* Avatar */}
+          {/* Avatar Icon */}
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0"
+            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs"
             style={{
-              background: `linear-gradient(135deg, ${persona.accentColor}40, ${persona.accentColor}18)`,
-              border: `1.5px solid ${persona.accentColor}50`,
-              boxShadow: `0 0 16px ${persona.accentColor}30`,
+              backgroundColor: `${persona.accentColor}15`,
+              border: `1px solid ${persona.accentColor}30`,
             }}
           >
-            <span className="text-2xl leading-none">{persona.emoji}</span>
+            <span className="text-xl leading-none">{persona.emoji}</span>
           </div>
 
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-white font-bold text-base leading-tight">{persona.label}</h2>
+              <h3 className="text-slate-900 dark:text-zinc-100 font-bold text-sm sm:text-base leading-tight">
+                {persona.label}
+              </h3>
               <span
-                className="hidden sm:flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                style={{ background: `${persona.accentColor}20`, color: persona.accentColor, border: `1px solid ${persona.accentColor}30` }}
+                className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                style={{
+                  backgroundColor: `${persona.accentColor}15`,
+                  color: persona.accentColor,
+                }}
               >
                 <Sparkles className="w-2.5 h-2.5" /> AI
               </span>
             </div>
-            <p className="text-white/45 text-xs">{persona.sublabel}</p>
+            <p className="text-slate-400 dark:text-zinc-500 text-xs">
+              {persona.sublabel}
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Role chip */}
-          <div
-            className="hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full"
-            style={{ background: `${persona.accentColor}15`, color: persona.accentColor, border: `1px solid ${persona.accentColor}35` }}
-          >
-            {persona.icon}
-            <span className="capitalize">{activeRole}</span>
-          </div>
-
-          {/* Clear chat */}
+          
           <button
             onClick={clearChat}
-            title="Clear chat"
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-white/35 hover:text-white/70 hover:bg-white/8 transition-all"
+            title="Clear conversation"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
           >
-            <X className="w-4 h-4" />
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
-
-        {/* Bottom glow line */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-px"
-          style={{ background: `linear-gradient(90deg, transparent, ${persona.accentColor}40, transparent)` }}
-        />
       </div>
 
       {/* ── Error Banner ── */}
       {error && (
-        <div
-          className="mx-4 mt-3 flex items-start gap-2.5 px-4 py-3 rounded-xl text-sm flex-shrink-0 z-10"
-          style={{ background: "#7f1d1d28", border: "1px solid #ef444430" }}
-        >
-          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-red-300 font-semibold text-xs mb-0.5">Request Failed</p>
-            <p className="text-red-400/75 text-xs">{error}</p>
+        <div className="mx-4 mt-3 flex items-start gap-2 px-3.5 py-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-xs z-10">
+          <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+          <div className="flex-1 text-red-600 dark:text-red-400">
+            <p className="font-semibold">Request Failed</p>
+            <p className="opacity-90">{error}</p>
           </div>
-          <button onClick={() => setError(null)} className="text-red-400/60 hover:text-red-300 transition-colors">
+          <button
+            onClick={() => setError(null)}
+            className="text-red-400 hover:text-red-600"
+          >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
 
-      {/* ── Messages ── */}
+      
       <div
         ref={containerRef}
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto px-4 py-5 space-y-4 relative z-10"
-        style={{ scrollbarWidth: "thin", scrollbarColor: `${persona.accentColor}30 transparent` }}
+        style={{
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(155, 155, 155, 0.2) transparent",
+        }}
       >
         {messages.map((msg) => (
           <MessageBubble
@@ -400,30 +465,26 @@ const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
             userImage={displayImage}
           />
         ))}
-        {isLoading && <TypingIndicator accentColor={persona.accentColor} label={persona.label} />}
+        {isLoading && (
+          <TypingIndicator
+            accentColor={persona.accentColor}
+            label={persona.label}
+          />
+        )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* ── Scroll button ── */}
       {showScrollBtn && (
         <button
           onClick={() => scrollToBottom()}
-          className="absolute bottom-24 right-5 w-8 h-8 rounded-full flex items-center justify-center shadow-xl transition-all hover:scale-110 active:scale-95 z-20"
-          style={{ background: persona.accentColor, boxShadow: `0 0 14px ${persona.accentColor}60` }}
+          className="absolute bottom-20 right-5 w-8 h-8 rounded-full bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 shadow-md flex items-center justify-center text-slate-600 dark:text-zinc-300 hover:scale-105 active:scale-95 transition-all z-20"
         >
-          <ChevronDown className="w-4 h-4 text-white" />
+          <ChevronDown className="w-4 h-4" />
         </button>
       )}
 
-      {/* ── Input ── */}
-      <div
-        className="flex-shrink-0 px-4 pb-4 pt-3 z-10"
-        style={{ borderTop: `1px solid ${persona.accentColor}18` }}
-      >
-        <div
-          className="flex items-end gap-3 rounded-xl px-4 py-3 transition-shadow duration-200"
-          style={{ background: `${persona.accentColor}08`, border: `1.5px solid ${persona.accentColor}22` }}
-        >
+      <div className="p-3 sm:p-4 border-t border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 z-10">
+        <div className="flex items-end gap-2 p-1.5 sm:p-2 rounded-2xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200/80 dark:border-zinc-700/80 focus-within:border-slate-300 dark:focus-within:border-zinc-600 transition-all">
           <textarea
             ref={inputRef}
             id="ai-doctor-message-input"
@@ -433,35 +494,36 @@ const AIDoctorChat: React.FC<{ userRole?: UserRole }> = ({ userRole }) => {
             placeholder={persona.placeholder}
             rows={1}
             disabled={isLoading}
-            className="flex-1 bg-transparent text-white/90 text-sm placeholder:text-white/28 resize-none outline-none leading-relaxed disabled:opacity-50 min-h-[24px] max-h-[120px]"
-            style={{ caretColor: persona.accentColor }}
+            className="flex-1 bg-transparent px-2 py-1.5 text-slate-900 dark:text-zinc-100 text-xs sm:text-sm placeholder:text-slate-400 dark:placeholder:text-zinc-500 resize-none outline-none leading-relaxed disabled:opacity-50 min-h-[28px] max-h-[120px]"
           />
 
           <button
             id="ai-doctor-send-btn"
             onClick={sendMessage}
             disabled={!input.trim() || isLoading}
-            className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed text-white shadow-xs"
             style={{
-              background: input.trim() && !isLoading
-                ? `linear-gradient(135deg, ${persona.accentColor}, ${persona.accentColor}cc)`
-                : `${persona.accentColor}28`,
-              boxShadow: input.trim() && !isLoading ? `0 0 14px ${persona.accentColor}50` : "none",
+              backgroundColor: persona.accentColor,
             }}
           >
-            {isLoading
-              ? <Loader2 className="w-4 h-4 text-white animate-spin" />
-              : <Send className="w-4 h-4 text-white" />
-            }
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
           </button>
         </div>
 
-        <p className="text-center text-white/18 text-[10px] mt-2 select-none">
+        <p className="text-center text-slate-400 dark:text-zinc-500 text-[10px] mt-2 select-none">
           Press{" "}
-          <kbd className="px-1 py-0.5 rounded bg-white/8 text-white/30 font-mono text-[9px]">Enter</kbd>
-          {" "}to send &nbsp;·&nbsp;
-          <kbd className="px-1 py-0.5 rounded bg-white/8 text-white/30 font-mono text-[9px]">Shift+Enter</kbd>
-          {" "}for new line
+          <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-500 dark:text-zinc-400 font-mono text-[9px]">
+            Enter
+          </kbd>{" "}
+          to send &nbsp;·&nbsp;
+          <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-500 dark:text-zinc-400 font-mono text-[9px]">
+            Shift+Enter
+          </kbd>{" "}
+          for new line
         </p>
       </div>
     </div>

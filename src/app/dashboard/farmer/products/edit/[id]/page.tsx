@@ -44,7 +44,7 @@ export default function EditProductPage() {
         }
     });
 
-    const baseurl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
+    const baseurl = process.env.NEXT_PUBLIC_BASE_URL ;
 
     useEffect(() => {
         if (!id) return;

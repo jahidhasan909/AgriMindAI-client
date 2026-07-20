@@ -13,7 +13,7 @@ export default async function SuccessPage({ searchParams }: SuccessProps) {
         throw new Error('Please provide a valid session_id (`cs_test_...`)');
     }
 
-
+const baseurl = process.env.NEXT_PUBLIC_BASE_URL
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
     if (session.status === 'open') {
@@ -26,7 +26,7 @@ export default async function SuccessPage({ searchParams }: SuccessProps) {
 
         if (metadata) {
             try {
-                await fetch('http://localhost:8000/api/store-payment', {
+                await fetch(`${baseurl}/api/store-payment`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

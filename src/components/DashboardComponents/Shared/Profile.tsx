@@ -169,9 +169,9 @@ export default function Profile({ userData }: ProfileComponentProps) {
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 dark:border-slate-800/60 pb-6 mb-8">
                 <div className="flex items-center gap-4">
-                    <Avatar className="w-16 h-16 ring-4 ring-[#f05a28]/10 dark:ring-slate-800">
+                    <Avatar className="w-16 h-16 ring-4 ring-[#79a603]/10 dark:ring-slate-800">
                         <AvatarImage alt="userimage" src={userData?.image} className="object-cover" />
-                        <AvatarFallback className="font-extrabold text-lg bg-[#f05a28]/10 text-[#f05a28] dark:bg-slate-800 dark:text-white">
+                        <AvatarFallback className="font-extrabold text-lg bg-[#79a603]/10 text-[#79a603] dark:bg-slate-800 dark:text-white">
                             {userData?.name?.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
@@ -198,7 +198,7 @@ export default function Profile({ userData }: ProfileComponentProps) {
                         <Button
                             type="button"
                             onClick={() => setIsEditable(true)}
-                            className="bg-[#f05a28] text-white hover:bg-[#f05a28]/90 font-bold flex items-center gap-2 rounded-xl px-4 h-10 text-xs shadow-xs transition-all active:scale-[0.98] hover:cursor-pointer"
+                            className="bg-[#79a603] text-white hover:bg-[#688f02] font-bold flex items-center gap-2 rounded-xl px-4 h-10 text-xs shadow-xs transition-all active:scale-[0.98] hover:cursor-pointer"
                         >
                             <Edit2 className="w-3.5 h-3.5" />
                             Edit Profile
@@ -228,7 +228,7 @@ export default function Profile({ userData }: ProfileComponentProps) {
                         disabled={!isEditable}
                         {...register("name", { required: "Name is required" })}
                         placeholder="Enter your full name"
-                        className="w-full bg-slate-50/50 dark:bg-slate-800/60 disabled:opacity-70 border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 py-5 outline-none focus-visible:ring-0 focus-visible:border-[#f05a28] dark:focus-visible:border-[#f05a28] transition-all"
+                        className="w-full bg-slate-50/50 dark:bg-slate-800/60 disabled:opacity-70 border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 py-5 outline-none focus-visible:ring-0 focus-visible:border-[#79a603] dark:focus-visible:border-[#79a603] transition-all"
                     />
                     {errors.name && <span className="text-xs text-red-500 font-medium pl-1">{errors.name.message}</span>}
                 </div>
@@ -251,7 +251,7 @@ export default function Profile({ userData }: ProfileComponentProps) {
                         type="file"
                         accept="image/*"
                         {...register("image")}
-                        className="w-full bg-slate-50/50 dark:bg-slate-800/60 disabled:opacity-70 border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 py-2.5 outline-none focus-visible:ring-0 focus-visible:border-[#f05a28] dark:focus-visible:border-[#f05a28] transition-all cursor-pointer file:text-xs file:font-bold file:text-[#f05a28] file:bg-[#f05a28]/10 file:rounded-lg file:border-none file:px-3 file:py-1 file:mr-3"
+                        className="w-full bg-slate-50/50 dark:bg-slate-800/60 disabled:opacity-70 border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 py-2.5 outline-none focus-visible:ring-0 focus-visible:border-[#79a603] dark:focus-visible:border-[#79a603] transition-all cursor-pointer file:text-xs file:font-bold file:text-[#79a603] file:bg-[#79a603]/10 file:rounded-lg file:border-none file:px-3 file:py-1 file:mr-3"
                     />
                 </div>
 
@@ -267,7 +267,7 @@ export default function Profile({ userData }: ProfileComponentProps) {
                                     setValue("upazila", "");
                                 }
                             })}
-                            className="w-full h-11 bg-slate-50/50 dark:bg-slate-800/60 disabled:opacity-70 disabled:cursor-not-allowed border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 outline-none focus:border-[#f05a28] dark:focus:border-[#f05a28] transition-all cursor-pointer"
+                            className="w-full h-11 bg-slate-50/50 dark:bg-slate-800/60 disabled:opacity-70 disabled:cursor-not-allowed border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 outline-none focus:border-[#79a603] dark:focus:border-[#79a603] transition-all cursor-pointer"
                         >
                             <option value="">Select district</option>
                             {districts.map((district) => (
@@ -285,7 +285,7 @@ export default function Profile({ userData }: ProfileComponentProps) {
                         <select
                             disabled={!isEditable || !selectedDistrictId}
                             {...register("upazila", { required: "Upazila is required" })}
-                            className="w-full h-11 bg-slate-50/50 dark:bg-slate-800/60 disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 outline-none focus:border-[#f05a28] dark:focus:border-[#f05a28] transition-all cursor-pointer"
+                            className="w-full h-11 bg-slate-50/50 dark:bg-slate-800/60 disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 outline-none focus:border-[#79a603] dark:focus:border-[#79a603] transition-all cursor-pointer"
                         >
                             <option value="">Select upazila</option>
                             {filteredUpazilas.map((upazila) => (
@@ -302,7 +302,7 @@ export default function Profile({ userData }: ProfileComponentProps) {
                     <div className="flex gap-2 mt-4 pt-6 border-t border-slate-100 dark:border-slate-800/60">
                         <Button
                             type="submit"
-                            className="bg-[#f05a28] hover:bg-[#f05a28]/90 text-white font-bold rounded-xl px-5 h-11 text-xs flex items-center gap-2 transition-all active:scale-[0.98] hover:cursor-pointer"
+                            className="bg-[#79a603] hover:bg-[#688f02] text-white font-bold rounded-xl px-5 h-11 text-xs flex items-center gap-2 transition-all active:scale-[0.98] hover:cursor-pointer"
                             disabled={submitting}
                         >
                             {submitting ? (

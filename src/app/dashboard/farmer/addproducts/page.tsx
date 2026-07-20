@@ -118,7 +118,7 @@ export default function CreateProductPost() {
         return <div className="text-center py-20 text-slate-500 font-medium">Please log in as a farmer to post products.</div>;
     }
 
-    const baseurl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
+    const baseurl = process.env.NEXT_PUBLIC_BASE_URL ;
 
     const handleAIFill = async () => {
         const productName = (document.getElementById('productName') as HTMLInputElement)?.value?.trim();

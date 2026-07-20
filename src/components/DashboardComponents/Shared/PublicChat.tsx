@@ -42,7 +42,6 @@ export default function PublicChatBox() {
     const chatEndRef = useRef<HTMLDivElement>(null);
     const baseurl = process.env.NEXT_PUBLIC_BASE_URL || "";
 
-
     const fetchChats = async () => {
         try {
             const res = await fetch(`${baseurl}/api/publicchat`);
@@ -60,12 +59,9 @@ export default function PublicChatBox() {
     useEffect(() => {
         fetchChats();
 
-
-
         const interval = setInterval(fetchChats, 5000);
         return () => clearInterval(interval);
     }, []);
-
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -111,7 +107,6 @@ export default function PublicChatBox() {
 
             if (!res.ok) {
                 toast.error("Failed to send message");
-
                 fetchChats();
             }
         } catch (error) {
@@ -124,24 +119,24 @@ export default function PublicChatBox() {
     };
 
     return (
-        <div className="flex flex-col h-[550px] w-full max-w-md mx-auto rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 shadow-md overflow-hidden">
+        <div className="flex flex-col h-[550px] w-full max-w-2xl mx-auto rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 shadow-md overflow-hidden">
 
-
+            {/* Header */}
             <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between">
                 <div>
                     <h3 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <span className="h-2 w-2 rounded-full bg-[#79a603] animate-pulse"></span>
                         Public Community Chat
                     </h3>
                     <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Everyone can read and reply</p>
                 </div>
             </div>
 
-
+            {/* Message Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
                 {isLoadingChats ? (
                     <div className="h-full flex items-center justify-center text-slate-400">
-                        <Loader2 className="h-6 w-6 animate-spin text-[#f05a28]" />
+                        <Loader2 className="h-6 w-6 animate-spin text-[#79a603]" />
                     </div>
                 ) : messages.length === 0 ? (
                     <div className="h-full flex items-center justify-center text-xs font-medium text-slate-400 dark:text-slate-500">
@@ -167,7 +162,7 @@ export default function PublicChatBox() {
                                     </span>
 
                                     <div className={`text-xs px-3.5 py-2 rounded-2xl break-all font-medium ${isMe
-                                            ? "bg-[#f05a28] text-white rounded-tr-none"
+                                            ? "bg-[#79a603] text-white rounded-tr-none shadow-xs"
                                             : isAdmin
                                                 ? "bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 rounded-tl-none font-semibold"
                                                 : "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none"
@@ -182,7 +177,7 @@ export default function PublicChatBox() {
                 <div ref={chatEndRef} />
             </div>
 
-
+            {/* Input Form */}
             <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-100 dark:border-slate-800/60 bg-white dark:bg-slate-900 flex items-center gap-2">
                 <input
                     type="text"
@@ -190,12 +185,12 @@ export default function PublicChatBox() {
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder={user ? "Type a message..." : "Please login to chat"}
                     disabled={!user || isSending}
-                    className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 py-3 outline-none focus:border-[#f05a28] dark:focus:border-[#f05a28] disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+                    className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/50 text-slate-800 dark:text-white text-xs font-medium rounded-xl px-4 py-3 outline-none focus:border-[#79a603] dark:focus:border-[#79a603] disabled:opacity-60 disabled:cursor-not-allowed transition-all"
                 />
                 <button
                     type="submit"
                     disabled={!newMessage.trim() || isSending || !user}
-                    className="h-9 w-9 flex items-center justify-center rounded-xl bg-[#f05a28] text-white hover:bg-[#d84e20] transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:cursor-pointer shadow-sm"
+                    className="h-9 w-9 flex items-center justify-center rounded-xl bg-[#79a603] text-white hover:bg-[#688f02] transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:cursor-pointer shadow-sm"
                 >
                     <Send className="h-4 w-4" />
                 </button>
