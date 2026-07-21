@@ -106,7 +106,7 @@ const Navbar: React.FC = () => {
                     <div className="hidden lg:flex items-center gap-8">
                         <Link href="/" className={linkClass('/')}>Home</Link>
                         <Link href="/marketplace" className={linkClass('/marketplace')}>Marketplace</Link>
-                        <Link href="/ai-doctor" className={linkClass('/ai-doctor')}>AI Doctor</Link>
+                        {user ? <Link href="/ai-doctor" className={linkClass('/ai-doctor')}>AI Doctor</Link> : ''}
                         <Link href="/about" className={linkClass('/about')}>About</Link>
                     </div>
 

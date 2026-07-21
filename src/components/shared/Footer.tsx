@@ -156,8 +156,8 @@ const pathname = usePathname();
               <li>+1 234 567 890</li>
               <li>09:00 AM – 06:00 PM</li>
               <li className="pt-1">
-                <a href="mailto:support@agripulse.com" className="hover:text-white transition-colors">
-                  support@agrimindai.com
+                <a href="mailto:[EMAIL_ADDRESS]" className="hover:text-white transition-colors">
+                  [EMAIL_ADDRESS]
                 </a>
               </li>
             </ul>
