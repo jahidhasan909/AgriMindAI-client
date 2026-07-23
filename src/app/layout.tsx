@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/components/theme-provider";
 import Footer from "@/components/shared/Footer";
+import FloatingChatbot from "@/components/FloatingChatbot";
 
 const plusSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <FloatingChatbot />
           <Toaster />
         </ThemeProvider>
 
